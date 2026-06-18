@@ -1,0 +1,231 @@
+<nav class="topnav">
+  <div class="nav-inner">
+    <a class="nav-brand" (click)="navegar('/admin/dashboard')" style="cursor: pointer">
+      <svg width="26" height="26" viewBox="0 0 30 30" fill="none">
+        <circle cx="15" cy="23" r="3.5" fill="currentColor" />
+        <path
+          d="M6 16C6 11.03 10.03 7 15 7C19.97 7 24 11.03 24 16"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          fill="none"
+        />
+        <path
+          d="M2 12C2 5.93 7.93 1 15 1C22.07 1 28 5.93 28 12"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          fill="none"
+          opacity="0.4"
+        />
+        <line
+          x1="15"
+          y1="19.5"
+          x2="15"
+          y2="22.5"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+        />
+      </svg>
+      Sistema
+    </a>
+    <div class="nav-links">
+      <a class="nav-link" (click)="navegar('/admin/dashboard')" style="cursor: pointer"
+        >Dashboard</a
+      >
+      <a class="nav-link" (click)="navegar('/admin/empresas')" style="cursor: pointer">Empresas</a>
+      <a class="nav-link" (click)="navegar('/admin/usuarios')" style="cursor: pointer">Usuários</a>
+      <a class="nav-link active">Devices</a>
+      <a class="nav-link" (click)="navegar('/admin/mapa')" style="cursor: pointer">Mapa</a>
+    </div>
+    <div class="nav-end">
+      <div class="user-chip">
+        <div class="user-avatar">{{ nomeUsuario.charAt(0).toUpperCase() }}</div>
+        <span class="user-name">{{ nomeUsuario }}</span>
+      </div>
+      <button class="btn-logout" (click)="logout()">Sair</button>
+    </div>
+  </div>
+</nav>
+
+<main class="page">
+  <div class="page-header">
+    <div>
+      <div class="page-title">Devices</div>
+      <div class="page-subtitle">Gerencie os dispositivos de telemetria</div>
+    </div>
+    <button class="btn-primary" (click)="abrirForm()">
+      <svg
+        width="15"
+        height="15"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5"
+        stroke-linecap="round"
+      >
+        <line x1="12" y1="5" x2="12" y2="19" />
+        <line x1="5" y1="12" x2="19" y2="12" />
+      </svg>
+      Novo Device
+    </button>
+  </div>
+
+  <!-- Formulário colapsável -->
+  <div class="form-panel" [class.open]="formAberto">
+    <div class="form-panel-header">
+      <span class="form-panel-title">Novo Device</span>
+      <button class="btn-close-panel" (click)="fecharForm()">×</button>
+    </div>
+    <div class="form-panel-body">
+      <div class="form-row form-row-3">
+        <div class="field">
+          <label>Nome *</label>
+          <input type="text" [(ngModel)]="fNome" placeholder="Nome do device" />
+        </div>
+        <div class="field">
+          <label>Identificador *</label>
+          <input type="text" [(ngModel)]="fIdentificador" placeholder="Ex: RT-001" />
+        </div>
+        <div class="field">
+          <label>Empresa *</label>
+          <select [(ngModel)]="fEmpresaId">
+            <option [ngValue]="null">Selecione uma empresa</option>
+            @for (e of empresas; track e) {
+              <option [ngValue]="e.id">{{ e.nome }}</option>
+            }
+          </select>
+        </div>
+      </div>
+      <div class="form-row form-row-2">
+        <div class="field">
+          <label>Latitude (opcional)</label>
+          <input type="number" [(ngModel)]="fLatitude" placeholder="-23.5505" />
+        </div>
+        <div class="field">
+          <label>Longitude (opcional)</label>
+          <input type="number" [(ngModel)]="fLongitude" placeholder="-46.6333" />
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn-primary" (click)="cadastrar()">Cadastrar</button>
+        <button class="btn-secondary" (click)="fecharForm()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filtro por empresa -->
+  <div style="margin-bottom: 16px; display: flex; align-items: center; gap: 12px">
+    <div class="field" style="margin: 0; min-width: 260px">
+      <select [(ngModel)]="filtroEmpresaId">
+        <option value="">Todas as empresas</option>
+        @for (e of empresas; track e) {
+          <option [value]="e.id">{{ e.nome }}</option>
+        }
+      </select>
+    </div>
+    <span class="table-count">{{ devicesFiltrados.length }} device(s)</span>
+  </div>
+
+  <!-- Tabela -->
+  <div class="table-card">
+    <div class="table-card-header">
+      <span class="table-card-title">Registros</span>
+      <span class="table-count">{{ devicesFiltrados.length }} devices</span>
+    </div>
+
+    @if (devicesFiltrados.length > 0) {
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>Identificador</th>
+            <th>Empresa</th>
+            <th>Status</th>
+            <th>Ativo</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (device of devicesFiltrados; track device) {
+            <tr>
+              <td class="cell-id">#{{ device.id }}</td>
+              <td class="cell-name">{{ device.nome }}</td>
+              <td class="cell-muted">{{ device.identificador }}</td>
+              <td class="cell-muted">{{ nomeEmpresa(device.empresaId) }}</td>
+              <td>
+                <span
+                  class="badge"
+                  [class.badge-online]="device.status === 'ONLINE'"
+                  [class.badge-offline]="device.status === 'OFFLINE'"
+                >
+                  <span class="bdot"></span>{{ device.status }}
+                </span>
+              </td>
+              <td>
+                <span
+                  class="badge"
+                  [class.badge-active]="device.ativo"
+                  [class.badge-inactive]="!device.ativo"
+                >
+                  <span class="bdot"></span>{{ device.ativo ? 'Ativo' : 'Inativo' }}
+                </span>
+              </td>
+              <td>
+                <div class="actions-cell">
+                  <button class="btn-sm btn-sm-default" (click)="editar(device)">Editar</button>
+                  @if (device.ativo) {
+                    <button class="btn-sm btn-sm-deactivate" (click)="desativar(device)">
+                      Desativar
+                    </button>
+                  }
+                  @if (!device.ativo) {
+                    <button class="btn-sm btn-sm-activate" (click)="reativar(device)">
+                      Reativar
+                    </button>
+                  }
+                  <button class="btn-sm btn-sm-danger" (click)="deletar(device)">Deletar</button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+
+    @if (devicesFiltrados.length === 0) {
+      <div class="empty-state">
+        <svg
+          width="40"
+          height="40"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+        >
+          <rect x="5" y="2" width="14" height="20" rx="2" />
+          <circle cx="12" cy="17" r="1" fill="currentColor" stroke="none" />
+          <path d="M9 7h6M9 11h4" />
+        </svg>
+        <p>Nenhum device encontrado.</p>
+      </div>
+    }
+  </div>
+</main>
+
+<div class="toast" [class.show]="toast.visivel">
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="#4ade80"
+    stroke-width="2.5"
+    stroke-linecap="round"
+  >
+    <polyline points="20 6 9 17 4 12" />
+  </svg>
+  {{ toast.mensagem }}
+</div>

@@ -1,0 +1,140 @@
+<nav class="topnav">
+  <div class="nav-inner">
+    <a class="nav-brand" (click)="navegar('/admin/dashboard')" style="cursor:pointer">
+      <svg width="26" height="26" viewBox="0 0 30 30" fill="none">
+        <circle cx="15" cy="23" r="3.5" fill="currentColor"/>
+        <path d="M6 16C6 11.03 10.03 7 15 7C19.97 7 24 11.03 24 16" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+        <path d="M2 12C2 5.93 7.93 1 15 1C22.07 1 28 5.93 28 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.4"/>
+        <line x1="15" y1="19.5" x2="15" y2="22.5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+      </svg>
+      Sistema
+    </a>
+    <div class="nav-links">
+      <a class="nav-link active">Dashboard</a>
+      <a class="nav-link" (click)="navegar('/admin/empresas')">Empresas</a>
+      <a class="nav-link" (click)="navegar('/admin/usuarios')">Usuários</a>
+      <a class="nav-link" (click)="navegar('/admin/devices')">Devices</a>
+      <a class="nav-link" (click)="navegar('/admin/mapa')">Mapa</a>
+    </div>
+    <div class="nav-end">
+      <div class="user-chip">
+        <div class="user-avatar">{{ nomeUsuario.charAt(0).toUpperCase() }}</div>
+        <span class="user-name">{{ nomeUsuario }}</span>
+      </div>
+      <button class="btn-logout" (click)="logout()">Sair</button>
+    </div>
+  </div>
+</nav>
+
+<main class="page">
+
+  <div class="welcome-banner">
+    <div class="welcome-text">
+      <div class="welcome-greeting">Olá, {{ nomeUsuario }} — bem-vindo ao painel</div>
+      <div class="welcome-date">{{ dataAtual }}</div>
+    </div>
+    <div class="welcome-badge">
+      <span class="status-dot"></span>
+      Sistema operacional
+    </div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon teal">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+      </div>
+      <div class="stat-body">
+        <div class="stat-value">{{ totalEmpresas }}</div>
+        <div class="stat-label">Empresas ativas</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon slate">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      </div>
+      <div class="stat-body">
+        <div class="stat-value">{{ totalUsuarios }}</div>
+        <div class="stat-label">Usuários cadastrados</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon violet">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="12" cy="17" r="1" fill="currentColor" stroke="none"/><path d="M9 7h6M9 11h4"/></svg>
+      </div>
+      <div class="stat-body">
+        <div class="stat-value">{{ totalDevicesOnline }}</div>
+        <div class="stat-label">Devices online</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon green">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+      </div>
+      <div class="stat-body">
+        <div class="stat-value" style="font-size:18px;padding-top:4px;">Online</div>
+        <div class="stat-label">Status do sistema</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">Acessar módulos</div>
+  <div class="nav-cards">
+
+    <div class="nav-card" (click)="navegar('/admin/empresas')">
+      <div class="nav-card-icon teal">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+      </div>
+      <div class="nav-card-body">
+        <div class="nav-card-title">
+          Empresas
+          <svg class="nav-card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+        </div>
+        <div class="nav-card-desc">Cadastre, edite e gerencie as empresas que utilizam a plataforma.</div>
+      </div>
+    </div>
+
+    <div class="nav-card" (click)="navegar('/admin/usuarios')">
+      <div class="nav-card-icon slate">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      </div>
+      <div class="nav-card-body">
+        <div class="nav-card-title">
+          Usuários
+          <svg class="nav-card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+        </div>
+        <div class="nav-card-desc">Controle de acesso, roles e vínculo com empresas.</div>
+      </div>
+    </div>
+
+    <div class="nav-card" (click)="navegar('/admin/devices')">
+      <div class="nav-card-icon violet">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="12" cy="17" r="1" fill="currentColor" stroke="none"/><path d="M9 7h6M9 11h4"/></svg>
+      </div>
+      <div class="nav-card-body">
+        <div class="nav-card-title">
+          Devices
+          <svg class="nav-card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+        </div>
+        <div class="nav-card-desc">Gerencie os dispositivos de telemetria, identificadores e localização geográfica.</div>
+      </div>
+    </div>
+
+    <div class="nav-card" (click)="navegar('/admin/mapa')">
+      <div class="nav-card-icon amber">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      </div>
+      <div class="nav-card-body">
+        <div class="nav-card-title">
+          Mapa
+          <svg class="nav-card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+        </div>
+        <div class="nav-card-desc">Visualize a localização em tempo real dos devices no mapa interativo.</div>
+      </div>
+    </div>
+
+  </div>
+</main>

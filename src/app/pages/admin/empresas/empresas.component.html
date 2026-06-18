@@ -1,0 +1,196 @@
+<nav class="topnav">
+  <div class="nav-inner">
+    <a class="nav-brand" (click)="navegar('/admin/dashboard')" style="cursor: pointer">
+      <svg width="26" height="26" viewBox="0 0 30 30" fill="none">
+        <circle cx="15" cy="23" r="3.5" fill="currentColor" />
+        <path
+          d="M6 16C6 11.03 10.03 7 15 7C19.97 7 24 11.03 24 16"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          fill="none"
+        />
+        <path
+          d="M2 12C2 5.93 7.93 1 15 1C22.07 1 28 5.93 28 12"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          fill="none"
+          opacity="0.4"
+        />
+        <line
+          x1="15"
+          y1="19.5"
+          x2="15"
+          y2="22.5"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+        />
+      </svg>
+      Sistema
+    </a>
+    <div class="nav-links">
+      <a class="nav-link" (click)="navegar('/admin/dashboard')" style="cursor: pointer"
+        >Dashboard</a
+      >
+      <a class="nav-link active">Empresas</a>
+      <a class="nav-link" (click)="navegar('/admin/usuarios')" style="cursor: pointer">Usuários</a>
+      <a class="nav-link" (click)="navegar('/admin/devices')" style="cursor: pointer">Devices</a>
+      <a class="nav-link" (click)="navegar('/admin/mapa')" style="cursor: pointer">Mapa</a>
+    </div>
+    <div class="nav-end">
+      <div class="user-chip">
+        <div class="user-avatar">{{ nomeUsuario.charAt(0).toUpperCase() }}</div>
+        <span class="user-name">{{ nomeUsuario }}</span>
+      </div>
+      <button class="btn-logout" (click)="logout()">Sair</button>
+    </div>
+  </div>
+</nav>
+
+<main class="page">
+  <div class="page-header">
+    <div>
+      <div class="page-title">Empresas</div>
+      <div class="page-subtitle">Gerencie as empresas cadastradas no sistema</div>
+    </div>
+    <button class="btn-primary" (click)="abrirForm()">
+      <svg
+        width="15"
+        height="15"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5"
+        stroke-linecap="round"
+      >
+        <line x1="12" y1="5" x2="12" y2="19" />
+        <line x1="5" y1="12" x2="19" y2="12" />
+      </svg>
+      Nova Empresa
+    </button>
+  </div>
+
+  <!-- Formulário colapsável -->
+  <div class="form-panel" [class.open]="formAberto">
+    <div class="form-panel-header">
+      <span class="form-panel-title">Nova Empresa</span>
+      <button class="btn-close-panel" (click)="fecharForm()">×</button>
+    </div>
+    <div class="form-panel-body">
+      <div class="form-row form-row-3">
+        <div class="field">
+          <label>Nome *</label>
+          <input type="text" [(ngModel)]="fNome" placeholder="Razão social da empresa" />
+        </div>
+        <div class="field">
+          <label>CNPJ *</label>
+          <input type="text" [(ngModel)]="fCnpj" placeholder="00.000.000/0000-00" />
+        </div>
+        <div class="field">
+          <label>E-mail</label>
+          <input type="email" [(ngModel)]="fEmail" placeholder="contato@empresa.com.br" />
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn-primary" (click)="cadastrar()">Cadastrar</button>
+        <button class="btn-secondary" (click)="fecharForm()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabela -->
+  <div class="table-card">
+    <div class="table-card-header">
+      <span class="table-card-title">Registros</span>
+      <span class="table-count"
+        >{{ empresas.length }} {{ empresas.length === 1 ? 'empresa' : 'empresas' }}</span
+      >
+    </div>
+
+    @if (empresas.length > 0) {
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>CNPJ</th>
+            <th>E-mail</th>
+            <th>Status</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (empresa of empresas; track empresa) {
+            <tr>
+              <td class="cell-id">#{{ empresa.id }}</td>
+              <td class="cell-name">{{ empresa.nome }}</td>
+              <td>{{ empresa.cnpj }}</td>
+              <td class="cell-muted">{{ empresa.email }}</td>
+              <td>
+                <span
+                  class="badge"
+                  [class.badge-active]="empresa.ativo"
+                  [class.badge-inactive]="!empresa.ativo"
+                >
+                  <span class="bdot"></span>
+                  {{ empresa.ativo ? 'Ativo' : 'Inativo' }}
+                </span>
+              </td>
+              <td>
+                <div class="actions-cell">
+                  <button class="btn-sm btn-sm-default" (click)="editar(empresa)">Editar</button>
+                  @if (empresa.ativo) {
+                    <button class="btn-sm btn-sm-deactivate" (click)="desativar(empresa)">
+                      Desativar
+                    </button>
+                  }
+                  @if (!empresa.ativo) {
+                    <button class="btn-sm btn-sm-activate" (click)="reativar(empresa)">
+                      Reativar
+                    </button>
+                  }
+                  <button class="btn-sm btn-sm-danger" (click)="deletar(empresa)">Deletar</button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+
+    @if (empresas.length === 0) {
+      <div class="empty-state">
+        <svg
+          width="40"
+          height="40"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+        >
+          <rect x="2" y="7" width="20" height="14" rx="2" />
+          <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
+        </svg>
+        <p>Nenhuma empresa cadastrada.</p>
+      </div>
+    }
+  </div>
+</main>
+
+<!-- Toast -->
+<div class="toast" [class.show]="toast.visivel">
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="#4ade80"
+    stroke-width="2.5"
+    stroke-linecap="round"
+  >
+    <polyline points="20 6 9 17 4 12" />
+  </svg>
+  {{ toast.mensagem }}
+</div>

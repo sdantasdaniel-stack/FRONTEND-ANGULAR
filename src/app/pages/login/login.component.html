@@ -1,0 +1,86 @@
+<div style="display:flex; min-height:100vh;">
+
+  <!-- Painel da marca -->
+  <div class="brand-panel">
+    <div class="brand-ring ring-a"></div>
+    <div class="brand-ring ring-b"></div>
+    <div class="brand-ring ring-c"></div>
+
+    <div class="brand-logo">
+      <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+        <circle cx="15" cy="23" r="3.5" fill="white"/>
+        <path d="M6 16C6 11.03 10.03 7 15 7C19.97 7 24 11.03 24 16" stroke="white" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+        <path d="M2 12C2 5.93 7.93 1 15 1C22.07 1 28 5.93 28 12" stroke="white" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.45"/>
+        <line x1="15" y1="19.5" x2="15" y2="22.5" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+      </svg>
+      <span class="brand-logo-text">Sistema</span>
+    </div>
+
+    <div class="brand-spacer"></div>
+
+    <div class="brand-content">
+      <div class="brand-pill">
+        <span class="dot"></span>
+        Telemetria IoT
+      </div>
+      <h1 class="brand-h1">Monitoramento<br>inteligente de<br>dispositivos</h1>
+      <p class="brand-p">Gerencie empresas, usuários e devices de telemetria em um único painel administrativo.</p>
+    </div>
+
+    <div class="brand-visual">
+      <svg width="300" height="210" viewBox="0 0 300 210" fill="none">
+        <circle cx="150" cy="210" r="65"  stroke="white" stroke-width="1.5"/>
+        <circle cx="150" cy="210" r="115" stroke="white" stroke-width="1"/>
+        <circle cx="150" cy="210" r="165" stroke="white" stroke-width="0.8"/>
+        <circle cx="150" cy="210" r="215" stroke="white" stroke-width="0.6"/>
+        <line x1="0" y1="210" x2="300" y2="210" stroke="white" stroke-width="0.6"/>
+        <line x1="150" y1="40"  x2="150" y2="210" stroke="white" stroke-width="0.6"/>
+        <circle cx="150" cy="210" r="5" fill="white"/>
+        <circle cx="200" cy="158" r="3" fill="white"/>
+        <circle cx="95"  cy="172" r="3" fill="white"/>
+        <circle cx="218" cy="200" r="2" fill="white"/>
+        <circle cx="120" cy="135" r="2" fill="white"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Painel do formulário -->
+  <div class="login-form-panel">
+    <div class="form-box">
+      <h2 class="form-heading">Bem-vindo de volta</h2>
+      <p class="form-lead">Acesse sua conta para continuar</p>
+
+      <div class="alert-error" [class.show]="erro">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+          <circle cx="8" cy="8" r="7" stroke="#dc2626" stroke-width="1.5"/>
+          <line x1="8" y1="4.5" x2="8" y2="8.5" stroke="#dc2626" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="8" cy="11" r="0.8" fill="#dc2626"/>
+        </svg>
+        E-mail ou senha inválidos. Por favor, tente novamente.
+      </div>
+
+      <div class="field">
+        <label for="email">E-mail</label>
+        <input type="email" id="email" [(ngModel)]="email"
+               placeholder="seu@email.com.br"
+               (input)="erro = false"
+               (keyup.enter)="entrar()">
+      </div>
+
+      <div class="field" style="margin-top:18px;">
+        <label for="senha">Senha</label>
+        <input type="password" id="senha" [(ngModel)]="senha"
+               placeholder="••••••••"
+               (input)="erro = false"
+               (keyup.enter)="entrar()">
+      </div>
+
+      <button class="btn-primary" style="width:100%;margin-top:24px;"
+              (click)="entrar()"
+              [disabled]="carregando">
+        {{ carregando ? 'Entrando...' : 'Entrar' }}
+      </button>
+    </div>
+  </div>
+
+</div>

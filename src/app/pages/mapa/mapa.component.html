@@ -1,0 +1,231 @@
+<nav class="topnav">
+  <div class="nav-inner">
+    <a
+      class="nav-brand"
+      (click)="navegar(isAdmin ? '/admin/dashboard' : '/user/devices')"
+      style="cursor: pointer"
+    >
+      <svg width="26" height="26" viewBox="0 0 30 30" fill="none">
+        <circle cx="15" cy="23" r="3.5" fill="currentColor" />
+        <path
+          d="M6 16C6 11.03 10.03 7 15 7C19.97 7 24 11.03 24 16"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          fill="none"
+        />
+        <path
+          d="M2 12C2 5.93 7.93 1 15 1C22.07 1 28 5.93 28 12"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          fill="none"
+          opacity="0.4"
+        />
+        <line
+          x1="15"
+          y1="19.5"
+          x2="15"
+          y2="22.5"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+        />
+      </svg>
+      Sistema
+    </a>
+    @if (isAdmin) {
+      <div class="nav-links">
+        <a class="nav-link" (click)="navegar('/admin/dashboard')" style="cursor: pointer"
+          >Dashboard</a
+        >
+        <a class="nav-link" (click)="navegar('/admin/empresas')" style="cursor: pointer"
+          >Empresas</a
+        >
+        <a class="nav-link" (click)="navegar('/admin/usuarios')" style="cursor: pointer"
+          >Usuários</a
+        >
+        <a class="nav-link" (click)="navegar('/admin/devices')" style="cursor: pointer">Devices</a>
+        <a class="nav-link active">Mapa</a>
+      </div>
+    }
+    @if (!isAdmin) {
+      <div class="nav-links">
+        <a class="nav-link" (click)="navegar('/user/devices')" style="cursor: pointer"
+          >Meus Devices</a
+        >
+        <a class="nav-link active">Mapa</a>
+      </div>
+    }
+    <div class="nav-end">
+      <div class="user-chip">
+        <div class="user-avatar">{{ nomeUsuario.charAt(0).toUpperCase() }}</div>
+        <span class="user-name">{{ nomeUsuario }}</span>
+      </div>
+      <button class="btn-logout" (click)="logout()">Sair</button>
+    </div>
+  </div>
+</nav>
+
+<div style="display: flex; height: calc(100vh - var(--nav-h)); overflow: hidden">
+  <!-- Sidebar -->
+  <aside
+    style="
+      width: 300px;
+      flex-shrink: 0;
+      background: var(--white);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    "
+  >
+    <div
+      style="padding: 16px 18px 12px; border-bottom: 1px solid var(--border); background: #f8fafc"
+    >
+      <div style="font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 10px">
+        Devices no mapa
+      </div>
+      @if (isAdmin) {
+        <select
+          style="
+            width: 100%;
+            height: 34px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius);
+            padding: 0 10px;
+            font-family: inherit;
+            font-size: 13px;
+            background: var(--white);
+            outline: none;
+          "
+          [(ngModel)]="filtroEmpresaId"
+          (change)="filtrar()"
+        >
+          <option value="">Todas as empresas</option>
+          @for (e of empresas; track e) {
+            <option [value]="e.id">{{ e.nome }}</option>
+          }
+        </select>
+      }
+    </div>
+
+    <!-- Stats -->
+    <div
+      style="display: flex; gap: 8px; padding: 12px 18px; border-bottom: 1px solid var(--border)"
+    >
+      <div
+        style="
+          flex: 1;
+          padding: 8px 10px;
+          border-radius: var(--radius);
+          background: var(--bg);
+          text-align: center;
+        "
+      >
+        <div style="font-size: 20px; font-weight: 700; color: var(--text); letter-spacing: -0.5px">
+          {{ devicesFiltrados.length }}
+        </div>
+        <div style="font-size: 11px; color: var(--text-3); font-weight: 500; margin-top: 1px">
+          com local.
+        </div>
+      </div>
+      <div
+        style="
+          flex: 1;
+          padding: 8px 10px;
+          border-radius: var(--radius);
+          background: #f0fdf4;
+          text-align: center;
+        "
+      >
+        <div style="font-size: 20px; font-weight: 700; color: #16a34a; letter-spacing: -0.5px">
+          {{ totalOnline }}
+        </div>
+        <div style="font-size: 11px; color: var(--text-3); font-weight: 500; margin-top: 1px">
+          online
+        </div>
+      </div>
+      <div
+        style="
+          flex: 1;
+          padding: 8px 10px;
+          border-radius: var(--radius);
+          background: var(--bg);
+          text-align: center;
+        "
+      >
+        <div style="font-size: 20px; font-weight: 700; color: #94a3b8; letter-spacing: -0.5px">
+          {{ totalOffline }}
+        </div>
+        <div style="font-size: 11px; color: var(--text-3); font-weight: 500; margin-top: 1px">
+          offline
+        </div>
+      </div>
+    </div>
+
+    <!-- Lista -->
+    <div style="flex: 1; overflow-y: auto; padding: 8px 0">
+      @if (devicesFiltrados.length === 0) {
+        <div
+          style="padding: 40px 18px; text-align: center; color: var(--text-3); font-size: 13.5px"
+        >
+          Nenhum device com localização disponível.
+        </div>
+      }
+      @for (d of devicesFiltrados; track d) {
+        <div
+          (click)="focarDevice(d)"
+          style="
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            padding: 10px 18px;
+            cursor: pointer;
+            transition: background 0.12s;
+          "
+          onmouseenter="this.style.background = 'var(--bg)'"
+          onmouseleave="this.style.background = 'transparent'"
+        >
+          <div
+            [style.background]="d.status === 'ONLINE' ? '#16a34a' : '#cbd5e1'"
+            style="width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0"
+          ></div>
+          <div style="flex: 1; min-width: 0">
+            <div
+              style="
+                font-size: 13.5px;
+                font-weight: 600;
+                color: var(--text);
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+              "
+            >
+              {{ d.nome }}
+            </div>
+            <div style="font-size: 12px; color: var(--text-3); margin-top: 1px">
+              {{ d.identificador }}
+            </div>
+          </div>
+          <span
+            [style.background]="d.status === 'ONLINE' ? '#f0fdf4' : 'var(--bg)'"
+            [style.color]="d.status === 'ONLINE' ? '#16a34a' : '#94a3b8'"
+            style="
+              font-size: 11px;
+              font-weight: 700;
+              padding: 2px 8px;
+              border-radius: 10px;
+              flex-shrink: 0;
+            "
+          >
+            {{ d.status }}
+          </span>
+        </div>
+      }
+    </div>
+  </aside>
+
+  <!-- Mapa -->
+  <div id="map" style="flex: 1; z-index: 1"></div>
+</div>
