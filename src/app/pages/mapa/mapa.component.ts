@@ -1,3 +1,4 @@
+import { environment } from '../../../environments/environment';
 import { Component, OnInit, OnDestroy, ChangeDetectorRef, NgZone } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -16,7 +17,7 @@ import SockJS from 'sockjs-client';
   styleUrl: './mapa.component.css',
 })
 export class MapaComponent implements OnInit, OnDestroy {
-  private readonly API = 'http://localhost:8080';
+  private readonly API = environment.apiUrl;
 
   nomeUsuario = '';
   isAdmin = false;
@@ -261,3 +262,4 @@ export class MapaComponent implements OnInit, OnDestroy {
   logout() { this.auth.logout(); }
   navegar(rota: string) { this.router.navigate([rota]); }
 }
+

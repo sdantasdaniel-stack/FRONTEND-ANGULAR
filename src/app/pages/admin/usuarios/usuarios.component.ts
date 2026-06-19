@@ -1,3 +1,4 @@
+import { environment } from '../../../../environments/environment';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -14,7 +15,7 @@ import { Empresa } from '../../../core/models/empresa.model';
   styleUrl: './usuarios.component.css',
 })
 export class UsuariosComponent implements OnInit {
-  private readonly API = 'http://localhost:8080';
+  private readonly API = environment.apiUrl;
 
   nomeUsuario = '';
   usuarios: Usuario[] = [];
@@ -126,10 +127,15 @@ export class UsuariosComponent implements OnInit {
 
   mostrarToast(mensagem: string) {
     this.toast = { visivel: true, mensagem };
+    this.cdr.detectChanges();
     if (this.toastTimer) clearTimeout(this.toastTimer);
-    this.toastTimer = setTimeout(() => this.toast.visivel = false, 4000);
+    this.toastTimer = setTimeout(() => {
+      this.toast.visivel = false;
+      this.cdr.detectChanges();
+    }, 3000);
   }
-
+  
   logout() { this.auth.logout(); }
   navegar(rota: string) { this.router.navigate([rota]); }
 }
+

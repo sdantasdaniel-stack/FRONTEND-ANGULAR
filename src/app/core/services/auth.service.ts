@@ -1,3 +1,4 @@
+import { environment } from '../../../environments/environment';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
@@ -7,7 +8,7 @@ import { LoginRequest, LoginResponse, UsuarioLogado } from '../models/auth.model
 @Injectable({ providedIn: 'root' })
 export class AuthService {
 
-  private readonly API = 'http://localhost:8080';
+  private readonly API = environment.apiUrl;
   private readonly KEY = 'usuario_logado';
 
   constructor(private http: HttpClient, private router: Router) {}
@@ -71,3 +72,4 @@ export class AuthService {
     }
   }
 }
+

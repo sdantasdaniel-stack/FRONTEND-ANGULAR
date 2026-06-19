@@ -1,3 +1,4 @@
+import { environment } from '../../../../environments/environment';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
@@ -15,7 +16,7 @@ import { Empresa, EmpresaRequest } from '../../../core/models/empresa.model';
 })
 export class EmpresasComponent implements OnInit {
 
-  private readonly API = 'http://localhost:8080';
+  private readonly API = environment.apiUrl;
 
   nomeUsuario = '';
   empresas: Empresa[] = [];
@@ -98,10 +99,15 @@ export class EmpresasComponent implements OnInit {
 
   mostrarToast(mensagem: string) {
     this.toast = { visivel: true, mensagem };
+    this.cdr.detectChanges();
     if (this.toastTimer) clearTimeout(this.toastTimer);
-    this.toastTimer = setTimeout(() => this.toast.visivel = false, 3000);
+    this.toastTimer = setTimeout(() => {
+      this.toast.visivel = false;
+      this.cdr.detectChanges();
+    }, 3000);
   }
 
   logout() { this.auth.logout(); }
   navegar(rota: string) { this.router.navigate([rota]); }
 }
+

@@ -1,5 +1,4 @@
-import { Component } from '@angular/core';
-
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
@@ -20,8 +19,8 @@ export class LoginComponent {
   constructor(
     private auth: AuthService,
     private router: Router,
+    private cdr: ChangeDetectorRef,
   ) {
-    // se já estiver logado, redireciona direto
     if (this.auth.isLogado()) {
       this.redirecionar();
     }
@@ -30,16 +29,19 @@ export class LoginComponent {
   entrar() {
     if (!this.email || !this.senha) {
       this.erro = true;
+      this.cdr.detectChanges();
       return;
     }
     this.carregando = true;
     this.erro = false;
+    this.cdr.detectChanges();
 
     this.auth.login({ email: this.email, senha: this.senha }).subscribe({
       next: () => this.redirecionar(),
       error: () => {
         this.erro = true;
         this.carregando = false;
+        this.cdr.detectChanges();
       },
     });
   }
@@ -52,4 +54,3 @@ export class LoginComponent {
     }
   }
 }
-

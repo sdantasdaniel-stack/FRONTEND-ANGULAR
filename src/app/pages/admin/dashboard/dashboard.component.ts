@@ -1,3 +1,4 @@
+import { environment } from '../../../../environments/environment';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
@@ -17,7 +18,7 @@ export class DashboardComponent implements OnInit {
   totalUsuarios = 0;
   totalDevicesOnline = 0;
 
-  private readonly API = 'http://localhost:8080';
+  private readonly API = environment.apiUrl;
 
   constructor(
     private auth: AuthService,
@@ -74,4 +75,5 @@ export class DashboardComponent implements OnInit {
   logout() { this.auth.logout(); }
   navegar(rota: string) { this.router.navigate([rota]); }
 }
+
 

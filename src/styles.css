@@ -140,7 +140,7 @@ body {
 .cell-id    { color: var(--text-3); font-size: 13px; font-weight: 600; }
 .cell-name  { font-weight: 600; }
 .cell-muted { color: var(--text-2); font-size: 13px; }
-.actions-cell { display: flex; align-items: center; gap: 6px; flex-wrap: nowrap; }
+.actions-cell { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 
 /* ── Badges ── */
 .badge { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; white-space: nowrap; }
@@ -182,3 +182,7 @@ body {
   .detail-form-row-2, .detail-form-row-3 { grid-template-columns: 1fr; }
   .checkbox-grid { grid-template-columns: repeat(2, 1fr); }
 }
+
+.actions-cell { min-width: 120px; }
+
+.table-card { overflow-x: auto; }

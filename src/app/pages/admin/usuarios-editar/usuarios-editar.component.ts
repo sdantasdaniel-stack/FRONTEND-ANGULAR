@@ -1,3 +1,4 @@
+import { environment } from '../../../../environments/environment';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -14,7 +15,7 @@ import { UsuarioRequest } from '../../../core/models/usuario.model';
   styleUrl: './usuarios-editar.component.css',
 })
 export class UsuariosEditarComponent implements OnInit {
-  private readonly API = 'http://localhost:8080';
+  private readonly API = environment.apiUrl;
 
   nomeUsuario = '';
   id!: number;
@@ -93,4 +94,5 @@ export class UsuariosEditarComponent implements OnInit {
   logout() { this.auth.logout(); }
   navegar(rota: string) { this.router.navigate([rota]); }
 }
+
 
