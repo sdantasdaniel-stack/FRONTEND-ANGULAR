@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, NgZone } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
@@ -34,10 +34,11 @@ export class MeusDevicesComponent implements OnInit, OnDestroy {
   private stompClient: Client | null = null;
 
   constructor(
-    private auth: AuthService,
-    private router: Router,
-    private http: HttpClient,
-    private cdr: ChangeDetectorRef
+  private auth: AuthService,
+  private router: Router,
+  private http: HttpClient,
+  private cdr: ChangeDetectorRef,
+  private ngZone: NgZone
   ) {}
 
   ngOnInit() {
@@ -90,36 +91,48 @@ export class MeusDevicesComponent implements OnInit, OnDestroy {
   }
 
   private conectarWebSocket() {
-    this.stompClient = new Client({
-      webSocketFactory: () => new SockJS(`${this.API}/ws`),
-      reconnectDelay: 5000,
-      debug: () => {}
-    });
+  this.stompClient = new Client({
+    webSocketFactory: () => new SockJS(`${this.API}/ws`),
+    reconnectDelay: 5000,
+    debug: () => {}
+  });
 
-    this.stompClient.onConnect = () => {
-      this.stompClient!.subscribe('/topic/devices', () => {
+  this.stompClient.onConnect = () => {
+
+    this.stompClient!.subscribe('/topic/devices', () => {
+      this.ngZone.run(() => {
         if (this.empresaIdSelecionada) this.carregarDevices();
       });
+    });
 
-      this.stompClient!.subscribe('/topic/empresas', msg => {
+    this.stompClient!.subscribe('/topic/empresas', msg => {
+      this.ngZone.run(() => {
         try {
           const update = JSON.parse(msg.body);
           const usuario = this.auth.getUsuario();
           const pertence = usuario?.empresas.some(e => e.id === update.id);
-          if (pertence) {
-            this.empresas = usuario?.empresas.filter(e => e.ativo) ?? [];
-            if (this.empresaIdSelecionada === update.id &&
-               (update.tipo === 'desativado' || update.tipo === 'deletado')) {
-              this.empresaIdSelecionada = null;
-              this.devices = [];
-            }
-            this.cdr.detectChanges();
-          }
+          if (!pertence) return;
+
+          this.http.get<Empresa[]>(`${this.API}/empresas/ativas`).subscribe({
+            next: empresasAtualizadas => {
+              this.empresas = empresasAtualizadas;
+              if (this.empresaIdSelecionada) {
+                const aindaAtiva = this.empresas.some(e => e.id === this.empresaIdSelecionada);
+                if (!aindaAtiva) {
+                  this.empresaIdSelecionada = null;
+                  this.devices = [];
+                }
+              }
+              this.cdr.detectChanges();
+            },
+            error: () => {}
+          });
         } catch {}
       });
-    };
+    });
+  };
 
-    this.stompClient.activate();
+  this.stompClient.activate();
   }
 
   private limparForm() {

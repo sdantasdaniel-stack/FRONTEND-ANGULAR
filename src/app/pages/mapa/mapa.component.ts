@@ -1,5 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, NgZone } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
@@ -28,18 +27,23 @@ export class MapaComponent implements OnInit, OnDestroy {
   private map: any = null;
   private markers: Record<number, any> = {};
   private L: any = null;
+  private mapaPronto = false;
 
   constructor(
     private auth: AuthService,
     private router: Router,
     private http: HttpClient,
+    private cdr: ChangeDetectorRef,
+    private ngZone: NgZone
   ) {}
 
   ngOnInit() {
     this.nomeUsuario = this.auth.getNome();
     this.isAdmin = this.auth.isAdmin();
+
     this.carregarLeaflet().then(() => {
       this.inicializarMapa();
+      this.mapaPronto = true;
       this.carregarDados();
       this.conectarWebSocket();
     });
@@ -47,9 +51,9 @@ export class MapaComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     if (this.stompClient) this.stompClient.deactivate();
+    if (this.map) { this.map.remove(); this.map = null; }
   }
 
-  // carrega o Leaflet dinamicamente — evita erro de "window is not defined"
   private carregarLeaflet(): Promise<void> {
     return new Promise((resolve) => {
       if ((window as any).L) {
@@ -61,12 +65,10 @@ export class MapaComponent implements OnInit, OnDestroy {
       link.rel = 'stylesheet';
       link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
       document.head.appendChild(link);
+
       const script = document.createElement('script');
       script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
-      script.onload = () => {
-        this.L = (window as any).L;
-        resolve();
-      };
+      script.onload = () => { this.L = (window as any).L; resolve(); };
       document.head.appendChild(script);
     });
   }
@@ -80,39 +82,48 @@ export class MapaComponent implements OnInit, OnDestroy {
   }
 
   private carregarDados() {
+    // ADMIN usa /devices (vê todos), USER usa /devices/ativos
+    // ambos os endpoints já retornam latitude/longitude no DeviceResponseDTO
     const endpoint = this.isAdmin ? '/devices' : '/devices/ativos';
+
     this.http.get<Device[]>(`${this.API}${endpoint}`).subscribe({
       next: (res) => {
-        this.devices = res.filter((d) => d.latitude != null && d.longitude != null);
-        this.renderizarMarcadores(this.devicesFiltrados);
-        this.renderizarSidebar();
+        // filtra apenas devices que têm coordenadas
+        this.devices = res.filter(d => d.latitude != null && d.longitude != null);
+        this.cdr.detectChanges();
+
+        // só renderiza se o mapa já estiver inicializado
+        if (this.mapaPronto) {
+          this.renderizarMarcadores(this.devicesFiltrados);
+        }
       },
-      error: () => {},
+      error: () => {}
     });
 
     if (this.isAdmin) {
       this.http.get<Empresa[]>(`${this.API}/empresas`).subscribe({
-        next: (res) => (this.empresas = res),
-        error: () => {},
+        next: (res) => { this.empresas = res; this.cdr.detectChanges(); },
+        error: () => {}
       });
     }
   }
 
   get devicesFiltrados(): Device[] {
     if (!this.filtroEmpresaId) return this.devices;
-    return this.devices.filter((d) => d.empresaId === Number(this.filtroEmpresaId));
+    return this.devices.filter(d => d.empresaId === Number(this.filtroEmpresaId));
   }
 
   get totalOnline(): number {
-    return this.devicesFiltrados.filter((d) => d.status === 'ONLINE').length;
+    return this.devicesFiltrados.filter(d => d.status === 'ONLINE').length;
   }
+
   get totalOffline(): number {
-    return this.devicesFiltrados.filter((d) => d.status === 'OFFLINE').length;
+    return this.devicesFiltrados.filter(d => d.status === 'OFFLINE').length;
   }
 
   filtrar() {
     this.renderizarMarcadores(this.devicesFiltrados);
-    this.renderizarSidebar();
+    this.cdr.detectChanges();
   }
 
   focarDevice(device: Device) {
@@ -122,35 +133,41 @@ export class MapaComponent implements OnInit, OnDestroy {
     if (marker) marker.openPopup();
   }
 
+  private criarIcone(status: string): any {
+  const cor = status === 'ONLINE' ? '#16a34a' : '#dc2626';
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20">
+    <circle cx="10" cy="10" r="7" fill="${cor}" stroke="white" stroke-width="2.5"/>
+  </svg>`;
+  return this.L.divIcon({
+    className: '',
+    html: svg,
+    iconSize: [20, 20],
+    iconAnchor: [10, 10],
+    popupAnchor: [0, -12],
+  });
+}
+
   private renderizarMarcadores(lista: Device[]) {
-    // remove todos os marcadores anteriores
-    Object.values(this.markers).forEach((m) => m.remove());
-    this.markers = {};
+  Object.values(this.markers).forEach((m) => m.remove());
+  this.markers = {};
 
     lista.forEach((d) => {
-      if (d.latitude == null || d.longitude == null) return;
-      const cor = d.status === 'ONLINE' ? '#16a34a' : '#94a3b8';
-      const icone = this.L.divIcon({
-        className: '',
-        html: `<div style="width:14px;height:14px;border-radius:50%;background:${cor};border:2.5px solid white;box-shadow:0 1px 5px rgba(0,0,0,.3);"></div>`,
-        iconSize: [14, 14],
-        iconAnchor: [7, 7],
-        popupAnchor: [0, -10],
-      });
-      const marker = this.L.marker([d.latitude, d.longitude], { icon: icone })
-        .addTo(this.map)
-        .bindPopup(this.popupHtml(d), { maxWidth: 220 });
-      this.markers[d.id] = marker;
-    });
+    if (d.latitude == null || d.longitude == null) return;
+    const marker = this.L.marker([d.latitude, d.longitude], { icon: this.criarIcone(d.status) })
+      .addTo(this.map)
+      .bindPopup(this.popupHtml(d), { maxWidth: 220 });
+    this.markers[d.id] = marker;
+  });
 
-    if (lista.length > 0) {
-      const group = this.L.featureGroup(Object.values(this.markers));
-      this.map.fitBounds(group.getBounds().pad(0.3));
-    }
+  if (lista.length > 0) {
+    const group = this.L.featureGroup(Object.values(this.markers));
+    this.map.fitBounds(group.getBounds().pad(0.3));
+  }
+
+  this.cdr.detectChanges();
   }
 
   private popupHtml(d: Device): string {
-    const sc = d.status === 'ONLINE' ? 'online' : 'offline';
     const cor = d.status === 'ONLINE' ? '#16a34a' : '#94a3b8';
     return `<div style="padding:12px 14px;min-width:170px;font-family:'DM Sans',sans-serif;">
       <div style="font-size:14px;font-weight:700;color:#0f172a;margin-bottom:3px;">${d.nome}</div>
@@ -159,11 +176,6 @@ export class MapaComponent implements OnInit, OnDestroy {
         <span style="width:6px;height:6px;border-radius:50%;background:${cor};"></span>${d.status}
       </span>
     </div>`;
-  }
-
-  // lista da sidebar — atualiza os contadores mas não re-renderiza os marcadores
-  renderizarSidebar() {
-    /* o Angular atualiza pelo getter devicesFiltrados */
   }
 
   private conectarWebSocket() {
@@ -175,10 +187,13 @@ export class MapaComponent implements OnInit, OnDestroy {
 
     this.stompClient.onConnect = () => {
       this.stompClient!.subscribe('/topic/devices', (msg) => {
-        try {
-          const update = JSON.parse(msg.body);
-          this.processarMensagem(update);
-        } catch {}
+        // executa dentro do NgZone para garantir detecção de mudança
+        this.ngZone.run(() => {
+          try {
+            const update = JSON.parse(msg.body);
+            this.processarMensagem(update);
+          } catch {}
+        });
       });
     };
 
@@ -187,31 +202,36 @@ export class MapaComponent implements OnInit, OnDestroy {
 
   private processarMensagem(update: any) {
     if (update.tipo === 'status') {
-      const device = this.devices.find((d) => d.id === update.id);
+      const device = this.devices.find(d => d.id === update.id);
       if (device) {
         device.status = update.status;
         const marker = this.markers[update.id];
         if (marker) {
           const cor = update.status === 'ONLINE' ? '#16a34a' : '#94a3b8';
-          marker.setIcon(
-            this.L.divIcon({
-              className: '',
-              html: `<div style="width:14px;height:14px;border-radius:50%;background:${cor};border:2.5px solid white;box-shadow:0 1px 5px rgba(0,0,0,.3);"></div>`,
-              iconSize: [14, 14],
-              iconAnchor: [7, 7],
-              popupAnchor: [0, -10],
-            }),
-          );
+          marker.setIcon(this.L.divIcon({
+            className: '',
+            html: `<div style="width:14px;height:14px;border-radius:50%;background:${cor};border:2.5px solid white;box-shadow:0 1px 5px rgba(0,0,0,.3);"></div>`,
+            iconSize: [14, 14], iconAnchor: [7, 7], popupAnchor: [0, -10],
+          }));
           marker.setPopupContent(this.popupHtml(device));
         }
       }
+      this.cdr.detectChanges();
       return;
     }
 
     if (update.tipo === 'editado' || update.tipo === 'reativado') {
-      const idx = this.devices.findIndex((d) => d.id === update.id);
+      const idx = this.devices.findIndex(d => d.id === update.id);
       if (idx !== -1) {
-        this.devices[idx] = { ...this.devices[idx], ...update };
+        this.devices[idx] = {
+          ...this.devices[idx],
+          nome: update.nome,
+          identificador: update.identificador,
+          status: update.status,
+          ativo: update.ativo,
+          latitude: update.lat,
+          longitude: update.lng,
+        };
       } else if (update.lat != null && update.ativo) {
         this.devices.push({
           id: update.id,
@@ -224,25 +244,20 @@ export class MapaComponent implements OnInit, OnDestroy {
           longitude: update.lng,
         });
       }
+      // re-filtra apenas devices com coordenadas
+      this.devices = this.devices.filter(d => d.latitude != null && d.longitude != null);
       this.renderizarMarcadores(this.devicesFiltrados);
       return;
     }
 
     if (update.tipo === 'desativado' || update.tipo === 'deletado') {
-      this.devices = this.devices.filter((d) => d.id !== update.id);
+      this.devices = this.devices.filter(d => d.id !== update.id);
       const marker = this.markers[update.id];
-      if (marker) {
-        marker.remove();
-        delete this.markers[update.id];
-      }
+      if (marker) { marker.remove(); delete this.markers[update.id]; }
+      this.cdr.detectChanges();
     }
   }
 
-  logout() {
-    this.auth.logout();
-  }
-  navegar(rota: string) {
-    this.router.navigate([rota]);
-  }
+  logout() { this.auth.logout(); }
+  navegar(rota: string) { this.router.navigate([rota]); }
 }
-
