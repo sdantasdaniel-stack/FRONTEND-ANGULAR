@@ -93,8 +93,7 @@ export class UsuariosEditarComponent implements OnInit {
       (typeof err?.error === 'string' ? err.error : null) ?? 'Ocorreu um erro inesperado';
   }
 
-  logout() { this.auth.logout(); }
-  navegar(rota: string) { this.router.navigate([rota]); }
+  
 }
 
 

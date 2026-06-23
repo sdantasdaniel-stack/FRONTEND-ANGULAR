@@ -125,7 +125,6 @@ export class DevicesComponent implements OnInit {
     }, 3000);
   }
 
-  logout() { this.auth.logout(); }
-  navegar(rota: string) { this.router.navigate([rota]); }
+  
 }
 

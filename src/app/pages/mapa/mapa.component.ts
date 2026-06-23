@@ -260,7 +260,6 @@ export class MapaComponent implements OnInit, OnDestroy {
     }
   }
 
-  logout() { this.auth.logout(); }
-  navegar(rota: string) { this.router.navigate([rota]); }
+  
 }
 

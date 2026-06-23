@@ -58,7 +58,6 @@ export class EmpresasEditarComponent implements OnInit {
     });
   }
 
-  logout() { this.auth.logout(); }
-  navegar(rota: string) { this.router.navigate([rota]); }
+  
 }
 
