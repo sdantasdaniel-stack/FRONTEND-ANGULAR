@@ -1,16 +1,23 @@
-import { environment } from '../../../../environments/environment';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
-import { AuthService } from '../../../core/services/auth.service';
 import { Navbar } from '../../../shared/components/navbar/navbar.component';
+import { EmpresaService } from '../../../core/services/empresa.service';
+import { DeviceService } from '../../../core/services/device.service';
+import { UsuarioService } from '../../../core/services/usuario.service';
+import { AuthService } from '../../../core/services/auth.service';
+
+
+
+
+
+
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
   imports: [Navbar],
   templateUrl: './dashboard.component.html',
-  styleUrl: './dashboard.component.css',
+  styleUrl: './dashboard.component.css'
 })
 export class DashboardComponent implements OnInit {
   nomeUsuario = '';
@@ -19,12 +26,12 @@ export class DashboardComponent implements OnInit {
   totalUsuarios = 0;
   totalDevicesOnline = 0;
 
-  private readonly API = environment.apiUrl;
-
   constructor(
     private auth: AuthService,
+    private empresaService: EmpresaService,
+    private deviceService: DeviceService,
+    private usuarioService: UsuarioService,
     private router: Router,
-    private http: HttpClient,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -38,43 +45,26 @@ export class DashboardComponent implements OnInit {
   private atualizarData() {
     const agora = new Date();
     this.dataAtual =
-      agora.toLocaleDateString('pt-BR', {
-        weekday: 'long',
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-      }) +
+      agora.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) +
       ' às ' +
       agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
     this.cdr.detectChanges();
   }
 
   private carregarEstatisticas() {
-    this.http.get<any[]>(`${this.API}/empresas`).subscribe({
-      next: res => {
-        this.totalEmpresas = res.filter(e => e.ativo).length;
-        this.cdr.detectChanges();
-      },
+    this.empresaService.listar().subscribe({
+      next: res => { this.totalEmpresas = res.filter(e => e.ativo).length; this.cdr.detectChanges(); },
       error: () => {}
     });
-    this.http.get<any[]>(`${this.API}/usuarios`).subscribe({
-      next: res => {
-        this.totalUsuarios = res.length;
-        this.cdr.detectChanges();
-      },
+    this.usuarioService.listar().subscribe({
+      next: res => { this.totalUsuarios = res.length; this.cdr.detectChanges(); },
       error: () => {}
     });
-    this.http.get<any[]>(`${this.API}/devices`).subscribe({
-      next: res => {
-        this.totalDevicesOnline = res.filter((d: any) => d.status === 'ONLINE').length;
-        this.cdr.detectChanges();
-      },
+    this.deviceService.listar().subscribe({
+      next: res => { this.totalDevicesOnline = res.filter(d => d.status === 'ONLINE').length; this.cdr.detectChanges(); },
       error: () => {}
     });
   }
 
-  logout() { this.auth.logout(); }
   navegar(rota: string) { this.router.navigate([rota]); }
 }
-
-
