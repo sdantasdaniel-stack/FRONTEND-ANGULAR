@@ -14,6 +14,7 @@
       <a class="nav-link" (click)="navegar('/admin/empresas')">Empresas</a>
       <a class="nav-link" (click)="navegar('/admin/usuarios')">Usuários</a>
       <a class="nav-link" (click)="navegar('/admin/devices')">Devices</a>
+      <a class="nav-link" (click)="navegar('/admin/importar-devices')">Importar</a>
       <a class="nav-link" (click)="navegar('/admin/mapa')">Mapa</a>
     </div>
     <div class="nav-end">
@@ -133,6 +134,19 @@
           <svg class="nav-card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
         </div>
         <div class="nav-card-desc">Visualize a localização em tempo real dos devices no mapa interativo.</div>
+      </div>
+    </div>
+
+    <div class="nav-card" (click)="navegar('/admin/importar-devices')">
+      <div class="nav-card-icon blue">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+      </div>
+      <div class="nav-card-body">
+        <div class="nav-card-title">
+          Importar Dispositivos
+          <svg class="nav-card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+        </div>
+        <div class="nav-card-desc">Importe devices por serial ou arquivo CSV, TXT e Excel.</div>
       </div>
     </div>
 
