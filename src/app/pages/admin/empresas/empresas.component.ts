@@ -6,11 +6,13 @@ import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../core/services/auth.service';
 import { Empresa, EmpresaRequest } from '../../../core/models/empresa.model';
+import { Navbar } from '../../../shared/components/navbar/navbar.component';
+
 
 @Component({
   selector: 'app-empresas',
   standalone: true,
-  imports: [FormsModule],
+  imports: [Navbar, FormsModule],
   templateUrl: './empresas.component.html',
   styleUrl: './empresas.component.css'
 })

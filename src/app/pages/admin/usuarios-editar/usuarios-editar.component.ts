@@ -6,11 +6,13 @@ import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../core/services/auth.service';
 import { Empresa } from '../../../core/models/empresa.model';
 import { UsuarioRequest } from '../../../core/models/usuario.model';
+import { Navbar } from '../../../shared/components/navbar/navbar.component';
+
 
 @Component({
   selector: 'app-usuarios-editar',
   standalone: true,
-  imports: [FormsModule],
+  imports: [Navbar, FormsModule],
   templateUrl: './usuarios-editar.component.html',
   styleUrl: './usuarios-editar.component.css',
 })

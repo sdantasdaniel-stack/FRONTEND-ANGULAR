@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ImportService, ImportacaoResponse } from '../../../core/services/import.service';
+import { Navbar } from '../../../shared/components/navbar/navbar.component';
 
 interface CardState {
   arquivo: File | null;
@@ -21,7 +22,7 @@ interface Toast {
 @Component({
   selector: 'app-importar-devices',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [Navbar, CommonModule, FormsModule],
   templateUrl: './importar-devices.component.html',
   styleUrls: ['./importar-devices.component.css']
 })
@@ -170,7 +171,7 @@ export class ImportarDevicesComponent {
       timer: setTimeout(() => {
         this.toast.visivel = false;
         this.cdr.detectChanges();
-      }, 7000)
+      }, 10000)
     };
   }
 }

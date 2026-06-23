@@ -6,11 +6,12 @@ import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../core/services/auth.service';
 import { Empresa } from '../../../core/models/empresa.model';
 import { DeviceRequest } from '../../../core/models/device.model';
+import { Navbar } from '../../../shared/components/navbar/navbar.component';
 
 @Component({
   selector: 'app-devices-editar',
   standalone: true,
-  imports: [FormsModule],
+  imports: [Navbar, FormsModule],
   templateUrl: './devices-editar.component.html',
   styleUrl: './devices-editar.component.css',
 })

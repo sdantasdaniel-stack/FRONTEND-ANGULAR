@@ -6,11 +6,12 @@ import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../core/services/auth.service';
 import { Usuario, UsuarioRequest } from '../../../core/models/usuario.model';
 import { Empresa } from '../../../core/models/empresa.model';
+import { Navbar } from '../../../shared/components/navbar/navbar.component';
 
 @Component({
   selector: 'app-usuarios',
   standalone: true,
-  imports: [FormsModule],
+  imports: [Navbar, FormsModule],
   templateUrl: './usuarios.component.html',
   styleUrl: './usuarios.component.css',
 })

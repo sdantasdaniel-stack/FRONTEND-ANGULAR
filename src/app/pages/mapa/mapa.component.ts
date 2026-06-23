@@ -8,11 +8,12 @@ import { Device } from '../../core/models/device.model';
 import { Empresa } from '../../core/models/empresa.model';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
+import { Navbar } from '../../shared/components/navbar/navbar.component';
 
 @Component({
   selector: 'app-mapa',
   standalone: true,
-  imports: [FormsModule],
+  imports: [Navbar, FormsModule],
   templateUrl: './mapa.component.html',
   styleUrl: './mapa.component.css',
 })

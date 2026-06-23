@@ -6,11 +6,12 @@ import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../core/services/auth.service';
 import { Device, DeviceRequest } from '../../../core/models/device.model';
 import { Empresa } from '../../../core/models/empresa.model';
+import { Navbar } from '../../../shared/components/navbar/navbar.component';
 
 @Component({
   selector: 'app-devices',
   standalone: true,
-  imports: [FormsModule],
+  imports: [Navbar, FormsModule],
   templateUrl: './devices.component.html',
   styleUrl: './devices.component.css',
 })

@@ -5,11 +5,12 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../core/services/auth.service';
 import { EmpresaRequest } from '../../../core/models/empresa.model';
+import { Navbar } from '../../../shared/components/navbar/navbar.component';
 
 @Component({
   selector: 'app-empresas-editar',
   standalone: true,
-  imports: [FormsModule],
+  imports: [Navbar, FormsModule],
   templateUrl: './empresas-editar.component.html',
   styleUrl: './empresas-editar.component.css',
 })
