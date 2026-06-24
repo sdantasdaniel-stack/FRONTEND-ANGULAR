@@ -65,8 +65,7 @@ export class ImportarDevicesComponent {
       },
       error: (err: HttpErrorResponse) => {
         this.serialCarregando = false;
-        const msg = err.error?.message || err.error?.erro || 'Erro ao importar o dispositivo.';
-        this.exibirToast(msg, 'erro');
+        this.exibirToast(this.extrairErro(err), 'erro');
         this.cdr.detectChanges();
       }
     });
@@ -129,37 +128,49 @@ export class ImportarDevicesComponent {
       },
       error: (err: HttpErrorResponse) => {
         card.carregando = false;
-        const msg = err.error?.message || err.error?.erro || 'Erro ao processar o arquivo.';
-        this.exibirToast(msg, 'erro');
+        this.exibirToast(this.extrairErro(err), 'erro');
         this.cdr.detectChanges();
       }
     });
   }
 
   private resolverRequest(index: number, arquivo: File) {
-    switch (index) {
-      case 0: return this.importService.importarDispositivosCsv(arquivo);
-      case 1: return this.importService.cadastrarDispositivosCsv(arquivo);
-      case 2: return this.importService.preCadastroPorSerialTxt(arquivo);
-      case 3: return this.importService.marcarMqeTxt(arquivo);
-      case 4: return this.importService.cadastrarPontosCsv(arquivo);
-      case 5: return this.importService.cadastrarPontosExcel(arquivo);
-      case 6: return this.importService.cadastrarPontosStg(arquivo);
-      case 7: return this.importService.importarSlf(arquivo);
-      case 8: return this.importService.associarImei(arquivo);
-      default: return this.importService.importarDispositivosCsv(arquivo);
-    }
+    const calls: Array<(f: File) => ReturnType<ImportService[keyof ImportService]>> = [
+      (f) => this.importService.importarDispositivosCsv(f),
+      (f) => this.importService.cadastrarDispositivosCsv(f),
+      (f) => this.importService.preCadastroPorSerialTxt(f),
+      (f) => this.importService.marcarMqeTxt(f),
+      (f) => this.importService.cadastrarPontosCsv(f),
+      (f) => this.importService.cadastrarPontosExcel(f),
+      (f) => this.importService.cadastrarPontosStg(f),
+      (f) => this.importService.importarSlf(f),
+      (f) => this.importService.associarImei(f),
+    ];
+
+    const call = calls[index] ?? calls[0];
+    return call(arquivo);
   }
 
   private montarMensagemSucesso(res: ImportacaoResponse): string {
-  if (res.sucesso !== undefined && res.falhas !== undefined) {
-    if (res.falhas === 0) {
+    if (res.sucesso !== undefined && res.falhas !== undefined) {
+      if (res.falhas === 0) {
         return `${res.sucesso} registro(s) importado(s) com sucesso.`;
       }
-        const listaErros = res.erros?.join(' | ') ?? '';
-          return `${res.sucesso} importado(s), ${res.falhas} falha(s). ${listaErros}`;
+      const listaErros = res.erros?.join(' | ') ?? '';
+      return `${res.sucesso} importado(s), ${res.falhas} falha(s). ${listaErros}`;
     }
-          return res.message || 'Operação realizada com sucesso.';
+    return res.message || 'Operação realizada com sucesso.';
+  }
+
+  private extrairErro(err: HttpErrorResponse): string {
+    if (err.status === 401) return 'Sessão expirada. Faça login novamente.';
+    if (err.status === 403) return 'Você não tem permissão para esta operação.';
+    if (err.status === 413) return 'Arquivo muito grande para envio.';
+    if (err.status === 0)   return 'Sem conexão com o servidor.';
+    return err.error?.message
+      ?? err.error?.erro
+      ?? err.message
+      ?? 'Erro ao processar a requisição.';
   }
 
   private exibirToast(mensagem: string, tipo: 'sucesso' | 'erro' | 'aviso'): void {

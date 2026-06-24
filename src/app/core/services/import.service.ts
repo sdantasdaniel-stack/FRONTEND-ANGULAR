@@ -14,72 +14,57 @@ export interface ImportacaoResponse {
 @Injectable({ providedIn: 'root' })
 export class ImportService {
 
+  // Ajuste o prefixo base conforme a URL real do seu Spring Boot
   private readonly BASE = `${environment.apiUrl}/devices/importar`;
 
   constructor(private http: HttpClient) {}
 
-  // ... resto do código igual
-
-  // ── endpoints reais ──────────────────────────────────────────────
-
   importarPorSerial(serial: string): Observable<ImportacaoResponse> {
     return this.http.post<ImportacaoResponse>(
-      `${this.BASE}/importar/serial`,
+      `${this.BASE}/serial`,
       { serial }
     );
   }
 
   importarDispositivosCsv(arquivo: File): Observable<ImportacaoResponse> {
-  const form = new FormData();
-  form.append('arquivo', arquivo);  // era 'file', agora é 'arquivo'
-  return this.http.post<ImportacaoResponse>(
-    `${this.BASE}/arquivo`,         // era só BASE, agora é BASE + /arquivo
-    form
-  );
-}
-
-  // ── endpoints pendentes (stub no backend) ────────────────────────
+    return this.upload(`${this.BASE}/arquivo`, arquivo);
+  }
 
   cadastrarDispositivosCsv(arquivo: File): Observable<ImportacaoResponse> {
-    return this.uploadPendente(arquivo);
+    return this.upload(`${this.BASE}/cadastrar`, arquivo);
   }
 
   preCadastroPorSerialTxt(arquivo: File): Observable<ImportacaoResponse> {
-    return this.uploadPendente(arquivo);
+    return this.upload(`${this.BASE}/pre-cadastro`, arquivo);
   }
 
   marcarMqeTxt(arquivo: File): Observable<ImportacaoResponse> {
-    return this.uploadPendente(arquivo);
+    return this.upload(`${this.BASE}/mqe`, arquivo);
   }
 
   cadastrarPontosCsv(arquivo: File): Observable<ImportacaoResponse> {
-    return this.uploadPendente(arquivo);
+    return this.upload(`${this.BASE}/pontos/csv`, arquivo);
   }
 
   cadastrarPontosExcel(arquivo: File): Observable<ImportacaoResponse> {
-    return this.uploadPendente(arquivo);
+    return this.upload(`${this.BASE}/pontos/excel`, arquivo);
   }
 
   cadastrarPontosStg(arquivo: File): Observable<ImportacaoResponse> {
-    return this.uploadPendente(arquivo);
+    return this.upload(`${this.BASE}/pontos/stg`, arquivo);
   }
 
   importarSlf(arquivo: File): Observable<ImportacaoResponse> {
-    return this.uploadPendente(arquivo);
+    return this.upload(`${this.BASE}/slf`, arquivo);
   }
 
   associarImei(arquivo: File): Observable<ImportacaoResponse> {
-    return this.uploadPendente(arquivo);
+    return this.upload(`${this.BASE}/imei`, arquivo);
   }
 
-  // ── helper privado ───────────────────────────────────────────────
-
-  private uploadPendente(arquivo: File): Observable<ImportacaoResponse> {
-  const form = new FormData();
-  form.append('arquivo', arquivo);  // era 'file'
-  return this.http.post<ImportacaoResponse>(
-    `${this.BASE}/pendente`,
-    form
-  );
-}
+  private upload(url: string, arquivo: File): Observable<ImportacaoResponse> {
+    const form = new FormData();
+    form.append('arquivo', arquivo);
+    return this.http.post<ImportacaoResponse>(url, form);
+  }
 }

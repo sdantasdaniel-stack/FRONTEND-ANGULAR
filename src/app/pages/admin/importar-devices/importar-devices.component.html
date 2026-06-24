@@ -78,13 +78,13 @@
   <div class="grid grid-cols-1 gap-4 mb-6 sm:grid-cols-2">
     <ng-container *ngTemplateOutlet="uploadCard; context: { $implicit: 4, titulo: 'Cadastrar pontos',     subtitulo: 'CSV',           aceitar: '.csv',       fmt: 'Apenas .csv',  labelBtn: 'Importar pontos',         iconVariant: 'ok' }"></ng-container>
     <ng-container *ngTemplateOutlet="uploadCard; context: { $implicit: 5, titulo: 'Cadastrar pontos',     subtitulo: 'Excel (.xlsx)', aceitar: '.xls,.xlsx', fmt: '.xls / .xlsx', labelBtn: 'Importar pontos (Excel)', iconVariant: 'ok' }"></ng-container>
-    <ng-container *ngTemplateOutlet="uploadCard; context: { $implicit: 6, titulo: 'Cadastrar pontos STG', subtitulo: 'XLS',           aceitar: '.xls',       fmt: 'Apenas .xls',  labelBtn: 'Importar pontos (STG)',   iconVariant: 'ok' }"></ng-container>
   </div>
 
-  <!-- Grid 3: SLF e IMEI -->
+  <!-- Grid 3: STG, SLF e IMEI -->
   <div class="grid grid-cols-1 gap-4 mb-6 sm:grid-cols-2">
-    <ng-container *ngTemplateOutlet="uploadCard; context: { $implicit: 7, titulo: 'Importar SLF',  subtitulo: 'CSV', aceitar: '.csv', fmt: 'Apenas .csv', labelBtn: 'Importar SLF',  iconVariant: 'default' }"></ng-container>
-    <ng-container *ngTemplateOutlet="uploadCard; context: { $implicit: 8, titulo: 'Associar IMEI', subtitulo: 'CSV', aceitar: '.csv', fmt: 'Apenas .csv', labelBtn: 'Associar IMEI', iconVariant: 'default' }"></ng-container>
+    <ng-container *ngTemplateOutlet="uploadCard; context: { $implicit: 6, titulo: 'Cadastrar pontos STG', subtitulo: 'XLS',           aceitar: '.xls',       fmt: 'Apenas .xls',  labelBtn: 'Importar pontos (STG)',   iconVariant: 'ok'      }"></ng-container>
+    <ng-container *ngTemplateOutlet="uploadCard; context: { $implicit: 7, titulo: 'Importar SLF',         subtitulo: 'CSV',           aceitar: '.csv',       fmt: 'Apenas .csv',  labelBtn: 'Importar SLF',            iconVariant: 'default' }"></ng-container>
+    <ng-container *ngTemplateOutlet="uploadCard; context: { $implicit: 8, titulo: 'Associar IMEI',        subtitulo: 'CSV',           aceitar: '.csv',       fmt: 'Apenas .csv',  labelBtn: 'Associar IMEI',           iconVariant: 'default' }"></ng-container>
   </div>
 
 </div>
