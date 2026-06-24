@@ -1,6 +1,8 @@
-<nav class="topnav">
-  <div class="nav-inner">
-    <a class="nav-brand" (click)="navegar('/admin/dashboard')" style="cursor:pointer">
+<nav class="sticky top-0 z-[100] bg-white border-b border-slate-200 shadow-[0_1px_3px_rgba(0,0,0,0.05)]">
+  <div class="flex items-center max-w-[1280px] mx-auto px-7 h-[60px] gap-1.5">
+
+    <a class="flex items-center gap-2.5 no-underline text-teal-600 text-[18px] font-bold tracking-tight mr-5 shrink-0 cursor-pointer"
+       (click)="navegar('/admin/dashboard')">
       <svg width="26" height="26" viewBox="0 0 30 30" fill="none">
         <circle cx="15" cy="23" r="3.5" fill="currentColor"/>
         <path d="M6 16C6 11.03 10.03 7 15 7C19.97 7 24 11.03 24 16" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" fill="none"/>
@@ -10,23 +12,29 @@
       Sistema
     </a>
 
-    <div class="nav-links">
+    <div class="flex items-center gap-0.5 flex-1">
       @for (link of navLinks; track link.path) {
-        <a class="nav-link"
-           [class.active]="isAtivo(link.path)"
-           (click)="navegar(link.path)"
-           style="cursor:pointer">
-          {{ link.label }}
-        </a>
+        <a class="inline-flex items-center h-[34px] px-3.5 rounded-md no-underline text-sm font-medium text-slate-500 transition-colors duration-150 cursor-pointer whitespace-nowrap hover:text-slate-800 hover:bg-slate-100"
+           [class.text-teal-600]="isAtivo(link.path)"
+           [class.bg-teal-50]="isAtivo(link.path)"
+           [class.font-semibold]="isAtivo(link.path)"
+           (click)="navegar(link.path)">{{ link.label }}</a>
       }
     </div>
 
-    <div class="nav-end">
-      <div class="user-chip">
-        <div class="user-avatar">{{ nomeUsuario.charAt(0).toUpperCase() }}</div>
-        <span class="user-name">{{ nomeUsuario }}</span>
+    <div class="flex items-center gap-3.5 ml-auto">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-full bg-teal-50 text-teal-600 text-[13px] font-bold flex items-center justify-center shrink-0">
+          {{ nomeUsuario.charAt(0).toUpperCase() }}
+        </div>
+        <span class="text-sm font-medium text-slate-500">{{ nomeUsuario }}</span>
       </div>
-      <button class="btn-logout" (click)="logout()">Sair</button>
+      <button
+        class="h-8 px-3.5 rounded-md border border-slate-200 bg-transparent font-[inherit] text-[13px] font-medium text-slate-500 cursor-pointer inline-flex items-center transition-colors duration-150 hover:border-slate-400 hover:text-slate-800"
+        (click)="logout()">
+        Sair
+      </button>
     </div>
+
   </div>
 </nav>

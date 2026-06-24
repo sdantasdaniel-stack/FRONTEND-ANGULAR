@@ -1,16 +1,19 @@
 <app-navbar />
 
-<div class="import-page">
+<div class="max-w-[1080px] mx-auto px-7 pt-9 pb-16">
 
-  <!-- cabeçalho -->
-  <div class="import-header">
-    <h1>Importar Dispositivos</h1>
-    <p>Importe e cadastre dispositivos e pontos de iluminação na plataforma.</p>
+  <!-- Cabeçalho -->
+  <div class="mb-7">
+    <h1 class="text-[22px] font-bold tracking-tight text-slate-900 mb-1">Importar Dispositivos</h1>
+    <p class="text-sm text-slate-500">Importe e cadastre dispositivos e pontos de iluminação na plataforma.</p>
   </div>
 
-  <!-- toast -->
+  <!-- Toast -->
   @if (toast.visivel) {
-    <div class="toast-inline fade-up" [class]="'toast-inline fade-up ' + toast.tipo">
+    <div class="fade-up flex items-center gap-2.5 px-4 py-3 rounded-lg text-sm font-medium mb-5 border"
+         [class.bg-green-50]="toast.tipo === 'sucesso'"   [class.text-green-700]="toast.tipo === 'sucesso'"   [class.border-green-200]="toast.tipo === 'sucesso'"
+         [class.bg-red-50]="toast.tipo === 'erro'"        [class.text-red-600]="toast.tipo === 'erro'"        [class.border-red-200]="toast.tipo === 'erro'"
+         [class.bg-amber-50]="toast.tipo === 'aviso'"     [class.text-amber-600]="toast.tipo === 'aviso'"     [class.border-amber-200]="toast.tipo === 'aviso'">
       @if (toast.tipo === 'sucesso') {
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
       }
@@ -24,25 +27,27 @@
     </div>
   }
 
-  <!-- card serial -->
-  <div class="import-card serial-card">
-    <div class="serial-card-body">
-      <span class="card-icon">
+  <!-- Card serial -->
+  <div class="bg-white border border-slate-200 rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.07)] p-6 mb-6">
+    <div class="flex items-start gap-4">
+      <span class="w-10 h-10 rounded-[10px] bg-teal-50 text-teal-600 flex items-center justify-center shrink-0">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2.5"/><path d="M8 21h8M12 17v4"/></svg>
       </span>
-      <div class="card-content">
-        <h2>Importar device por serial</h2>
-        <p>Informe o número serial do dispositivo para importação individual.</p>
-        <div class="serial-row">
+      <div class="flex-1">
+        <h2 class="text-[15px] font-bold text-slate-900 mb-0.5">Importar device por serial</h2>
+        <p class="text-[13px] text-slate-500 mb-4">Informe o número serial do dispositivo para importação individual.</p>
+        <div class="flex gap-2.5">
           <input
             type="text"
             [(ngModel)]="serial"
             (ngModelChange)="onSerialInput()"
             (keyup.enter)="importarSerial()"
             placeholder="Ex: SN-0082BFC1A4E7"
-            [class.invalid]="serialInvalido" />
+            class="flex-1 h-[42px] border border-slate-200 rounded-lg px-3.5 font-[inherit] text-sm text-slate-900 bg-slate-50 outline-none transition-all duration-150 placeholder:text-slate-400 focus:border-teal-500 focus:shadow-[0_0_0_3px_rgba(13,148,136,0.18)] focus:bg-white"
+            [class.border-red-500]="serialInvalido"
+            [class.bg-red-50]="serialInvalido" />
           <button
-            class="btn-primary"
+            class="inline-flex items-center gap-1.5 h-[42px] px-4 bg-teal-600 text-white border-none rounded-lg font-[inherit] text-sm font-semibold cursor-pointer whitespace-nowrap transition-colors duration-150 hover:bg-teal-700 disabled:opacity-60 disabled:cursor-not-allowed"
             (click)="importarSerial()"
             [disabled]="serialCarregando">
             @if (serialCarregando) {
@@ -61,70 +66,77 @@
     </div>
   </div>
 
-  <!-- grid 1: dispositivos -->
-  <div class="cards-grid">
-    <ng-container *ngTemplateOutlet="uploadCard; context: { $implicit: 0, titulo: 'Importar dispositivos',  subtitulo: 'Arquivo de dispositivos', aceitar: '.csv,.xls,.xlsx,.txt', fmt: 'CSV, Excel ou TXT', labelBtn: 'Importar dispositivos', iconClass: '' }"></ng-container>
-    <ng-container *ngTemplateOutlet="uploadCard; context: { $implicit: 1, titulo: 'Cadastrar dispositivos', subtitulo: 'CSV',                      aceitar: '.csv',              fmt: 'Apenas .csv',       labelBtn: 'Cadastrar devices',       iconClass: 'muted' }"></ng-container>
-    <ng-container *ngTemplateOutlet="uploadCard; context: { $implicit: 2, titulo: 'Pré-cadastro por serial', subtitulo: 'TXT',                     aceitar: '.txt',              fmt: 'Apenas .txt',       labelBtn: 'Pré-cadastrar',           iconClass: 'muted' }"></ng-container>
-    <ng-container *ngTemplateOutlet="uploadCard; context: { $implicit: 3, titulo: 'Marcar MQE por serial',   subtitulo: 'TXT',                     aceitar: '.txt',              fmt: 'Apenas .txt',       labelBtn: 'Marcar como MQE',         iconClass: 'warn'  }"></ng-container>
+  <!-- Grid 1: dispositivos -->
+  <div class="grid grid-cols-1 gap-4 mb-6 sm:grid-cols-2">
+    <ng-container *ngTemplateOutlet="uploadCard; context: { $implicit: 0, titulo: 'Importar dispositivos',   subtitulo: 'Arquivo de dispositivos', aceitar: '.csv,.xls,.xlsx,.txt', fmt: 'CSV, Excel ou TXT', labelBtn: 'Importar dispositivos', iconVariant: 'default' }"></ng-container>
+    <ng-container *ngTemplateOutlet="uploadCard; context: { $implicit: 1, titulo: 'Cadastrar dispositivos',  subtitulo: 'CSV',                     aceitar: '.csv',                fmt: 'Apenas .csv',       labelBtn: 'Cadastrar devices',       iconVariant: 'muted'   }"></ng-container>
+    <ng-container *ngTemplateOutlet="uploadCard; context: { $implicit: 2, titulo: 'Pré-cadastro por serial', subtitulo: 'TXT',                     aceitar: '.txt',                fmt: 'Apenas .txt',       labelBtn: 'Pré-cadastrar',           iconVariant: 'muted'   }"></ng-container>
+    <ng-container *ngTemplateOutlet="uploadCard; context: { $implicit: 3, titulo: 'Marcar MQE por serial',   subtitulo: 'TXT',                     aceitar: '.txt',                fmt: 'Apenas .txt',       labelBtn: 'Marcar como MQE',         iconVariant: 'warn'    }"></ng-container>
   </div>
 
-  <!-- grid 2: pontos -->
-  <div class="cards-grid">
-    <ng-container *ngTemplateOutlet="uploadCard; context: { $implicit: 4, titulo: 'Cadastrar pontos',     subtitulo: 'CSV',         aceitar: '.csv',      fmt: 'Apenas .csv',  labelBtn: 'Importar pontos',         iconClass: 'ok' }"></ng-container>
-    <ng-container *ngTemplateOutlet="uploadCard; context: { $implicit: 5, titulo: 'Cadastrar pontos',     subtitulo: 'Excel (.xlsx)', aceitar: '.xls,.xlsx', fmt: '.xls / .xlsx', labelBtn: 'Importar pontos (Excel)', iconClass: 'ok' }"></ng-container>
-    <ng-container *ngTemplateOutlet="uploadCard; context: { $implicit: 6, titulo: 'Cadastrar pontos STG', subtitulo: 'XLS',         aceitar: '.xls',      fmt: 'Apenas .xls',  labelBtn: 'Importar pontos (STG)',   iconClass: 'ok' }"></ng-container>
+  <!-- Grid 2: pontos -->
+  <div class="grid grid-cols-1 gap-4 mb-6 sm:grid-cols-2">
+    <ng-container *ngTemplateOutlet="uploadCard; context: { $implicit: 4, titulo: 'Cadastrar pontos',     subtitulo: 'CSV',           aceitar: '.csv',       fmt: 'Apenas .csv',  labelBtn: 'Importar pontos',         iconVariant: 'ok' }"></ng-container>
+    <ng-container *ngTemplateOutlet="uploadCard; context: { $implicit: 5, titulo: 'Cadastrar pontos',     subtitulo: 'Excel (.xlsx)', aceitar: '.xls,.xlsx', fmt: '.xls / .xlsx', labelBtn: 'Importar pontos (Excel)', iconVariant: 'ok' }"></ng-container>
+    <ng-container *ngTemplateOutlet="uploadCard; context: { $implicit: 6, titulo: 'Cadastrar pontos STG', subtitulo: 'XLS',           aceitar: '.xls',       fmt: 'Apenas .xls',  labelBtn: 'Importar pontos (STG)',   iconVariant: 'ok' }"></ng-container>
   </div>
 
-  <!-- grid 3: SLF e IMEI -->
-  <div class="cards-grid">
-    <ng-container *ngTemplateOutlet="uploadCard; context: { $implicit: 7, titulo: 'Importar SLF',  subtitulo: 'CSV', aceitar: '.csv', fmt: 'Apenas .csv', labelBtn: 'Importar SLF',  iconClass: '' }"></ng-container>
-    <ng-container *ngTemplateOutlet="uploadCard; context: { $implicit: 8, titulo: 'Associar IMEI', subtitulo: 'CSV', aceitar: '.csv', fmt: 'Apenas .csv', labelBtn: 'Associar IMEI', iconClass: '' }"></ng-container>
+  <!-- Grid 3: SLF e IMEI -->
+  <div class="grid grid-cols-1 gap-4 mb-6 sm:grid-cols-2">
+    <ng-container *ngTemplateOutlet="uploadCard; context: { $implicit: 7, titulo: 'Importar SLF',  subtitulo: 'CSV', aceitar: '.csv', fmt: 'Apenas .csv', labelBtn: 'Importar SLF',  iconVariant: 'default' }"></ng-container>
+    <ng-container *ngTemplateOutlet="uploadCard; context: { $implicit: 8, titulo: 'Associar IMEI', subtitulo: 'CSV', aceitar: '.csv', fmt: 'Apenas .csv', labelBtn: 'Associar IMEI', iconVariant: 'default' }"></ng-container>
   </div>
 
 </div>
 
-<!-- ── template reutilizável ── -->
+<!-- Template reutilizável -->
 <ng-template #uploadCard let-index
   let-titulo="titulo"
   let-subtitulo="subtitulo"
   let-aceitar="aceitar"
   let-fmt="fmt"
   let-labelBtn="labelBtn"
-  let-iconClass="iconClass">
+  let-iconVariant="iconVariant">
 
-  <div class="import-card">
+  <div class="bg-white border border-slate-200 rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.07)] p-6">
 
-    <div class="upload-card-header">
-      <span class="card-icon" [class]="'card-icon ' + iconClass">
+    <!-- Header do card -->
+    <div class="flex items-center gap-3 mb-4">
+      <span class="w-10 h-10 rounded-[10px] flex items-center justify-center shrink-0"
+            [class.bg-teal-50]="iconVariant === 'default'"   [class.text-teal-600]="iconVariant === 'default'"
+            [class.bg-slate-100]="iconVariant === 'muted'"   [class.text-slate-400]="iconVariant === 'muted'"
+            [class.bg-amber-50]="iconVariant === 'warn'"     [class.text-amber-600]="iconVariant === 'warn'"
+            [class.bg-green-50]="iconVariant === 'ok'"       [class.text-green-600]="iconVariant === 'ok'">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
       </span>
       <div>
-        <h2>{{ titulo }}</h2>
-        <p>{{ subtitulo }}</p>
+        <h2 class="text-sm font-bold text-slate-900 mb-0.5">{{ titulo }}</h2>
+        <p class="text-xs text-slate-500">{{ subtitulo }}</p>
       </div>
     </div>
 
+    <!-- Drop zone -->
     <label
-      class="drop-zone"
-      [class.drag-over]="cards[index].dragOver"
-      [class.has-file]="cards[index].arquivo !== null"
+      class="flex flex-col items-center justify-center gap-1.5 p-5 border-2 border-dashed border-slate-200 rounded-lg cursor-pointer text-center transition-all duration-150 mb-3 hover:border-teal-500 hover:bg-teal-50"
+      [class.border-teal-500]="cards[index].dragOver || cards[index].arquivo !== null"
+      [class.bg-teal-50]="cards[index].dragOver || cards[index].arquivo !== null"
+      [class.border-solid]="cards[index].arquivo !== null"
       (dragover)="onDragOver($event, index)"
       (dragleave)="onDragLeave(index)"
       (drop)="onDrop($event, index)">
-      <input type="file" class="hidden" style="display:none" [accept]="aceitar" (change)="onFileChange($event, index)" />
-      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+      <input type="file" class="hidden" [accept]="aceitar" (change)="onFileChange($event, index)" />
+      <svg class="text-slate-300" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
       @if (cards[index].arquivo) {
-        <span class="drop-file">{{ cards[index].nomeArquivo }}</span>
+        <span class="text-[13px] font-semibold text-teal-600 break-all">{{ cards[index].nomeArquivo }}</span>
       } @else {
-        <span class="drop-hint">Arraste ou <span>escolha o arquivo</span></span>
+        <span class="text-[13px] font-medium text-slate-500">Arraste ou <span class="text-teal-600 underline underline-offset-2">escolha o arquivo</span></span>
       }
-      <span class="drop-fmt">{{ fmt }}</span>
+      <span class="text-[11.5px] text-slate-400">{{ fmt }}</span>
     </label>
 
+    <!-- Botão importar -->
     <button
-      class="btn-primary"
-      style="width: 100%; justify-content: center;"
+      class="w-full inline-flex items-center justify-center gap-1.5 h-[38px] px-4 bg-teal-600 text-white border-none rounded-lg font-[inherit] text-sm font-semibold cursor-pointer transition-colors duration-150 hover:bg-teal-700 disabled:opacity-60 disabled:cursor-not-allowed"
       (click)="importar(index)"
       [disabled]="cards[index].carregando">
       @if (cards[index].carregando) {
